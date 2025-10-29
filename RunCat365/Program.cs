@@ -87,6 +87,7 @@ namespace RunCat365
                 s => launchAtStartupManager.SetStartup(s),
                 () => OpenRepository(),
                 () =>  mouseMover.Start(),
+                () => TeamsStatusKeeper.Instance.Start(),
                 () => Application.Exit()
             );
 
