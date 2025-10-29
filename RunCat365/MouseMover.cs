@@ -18,11 +18,25 @@ namespace RunCat365
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
+        // Aggiungi questa API per prevenire sleep/screen lock
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
             public int X;
             public int Y;
+        }
+
+        // Aggiungi questo enum
+        [Flags]
+        public enum EXECUTION_STATE : uint
+        {
+            ES_AWAYMODE_REQUIRED = 0x00000040,
+            ES_CONTINUOUS = 0x80000000,
+            ES_DISPLAY_REQUIRED = 0x00000002,
+            ES_SYSTEM_REQUIRED = 0x00000001
         }
 
         // Costanti hotkey
@@ -33,23 +47,20 @@ namespace RunCat365
         private const uint MOD_NOREPEAT = 0x4000;
         private const uint VK_H = 0x48;
 
-        private readonly int _intervalloMinuti;
+        private readonly int _intervalloSecondi;
         private readonly int _intervalloMs;
         private bool _isRunning;
         private Thread _workerThread;
 
         public bool IsRunning => _isRunning;
 
-        public MouseMover(int intervalloMinuti = 4)
+        public MouseMover(int intervalloSecondi = 4)
         {
-            _intervalloMinuti = intervalloMinuti;
-            _intervalloMs = _intervalloMinuti * 60 * 1000;
+            _intervalloSecondi = intervalloSecondi;
+            _intervalloMs = _intervalloSecondi * 1000;
             _isRunning = false;
 
-            // Crea handle per ricevere messaggi Windows
             CreateHandle(new CreateParams());
-
-            // Registra hotkey Ctrl+Shift+H
             RegisterHotKey(Handle, HOTKEY_ID,
                 MOD_CONTROL | MOD_SHIFT | MOD_NOREPEAT, VK_H);
         }
@@ -59,6 +70,12 @@ namespace RunCat365
             if (_isRunning) return;
 
             _isRunning = true;
+
+            // Previeni sleep e screen lock
+            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS |
+                                   EXECUTION_STATE.ES_DISPLAY_REQUIRED |
+                                   EXECUTION_STATE.ES_SYSTEM_REQUIRED);
+
             _workerThread = new Thread(ExecuteLoop)
             {
                 IsBackground = true
@@ -72,11 +89,13 @@ namespace RunCat365
 
             _isRunning = false;
             _workerThread?.Join(5000);
+
+            // Ripristina comportamento normale del sistema
+            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }
 
         protected override void WndProc(ref Message m)
         {
-            // Intercetta messaggio hotkey
             if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == HOTKEY_ID)
             {
                 Stop();

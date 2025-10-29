@@ -72,7 +72,7 @@ namespace RunCat365
             memoryRepository = new MemoryRepository();
             storageRepository = new StorageRepository();
             launchAtStartupManager = new LaunchAtStartupManager();
-            mouseMover = new MouseMover(4);
+            mouseMover = new MouseMover(5);
 
 
             contextMenuManager = new ContextMenuManager(
