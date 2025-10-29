@@ -13,6 +13,18 @@ namespace RunCat365
         [DllImport("user32.dll")]
         private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
+        [FlagsAttribute]
+        private enum EXECUTION_STATE : uint
+        {
+            ES_AWAYMODE_REQUIRED = 0x00000040,
+            ES_CONTINUOUS = 0x80000000,
+            ES_DISPLAY_REQUIRED = 0x00000002,
+            ES_SYSTEM_REQUIRED = 0x00000001
+        }
+
         private const byte VK_NUMLOCK = 0x90;
         private const uint KEYEVENTF_EXTENDEDKEY = 0x1;
         private const uint KEYEVENTF_KEYUP = 0x2;
@@ -22,7 +34,6 @@ namespace RunCat365
         private bool _isRunning;
         private readonly object _lock = new object();
 
-        // Costruttore privato per Singleton
         private TeamsStatusKeeper() { }
 
         public void Start()
@@ -38,6 +49,12 @@ namespace RunCat365
                 _cancellationTokenSource = new CancellationTokenSource();
                 _isRunning = true;
 
+                // Previene sleep del sistema E blocco dello schermo
+                SetThreadExecutionState(
+                    EXECUTION_STATE.ES_CONTINUOUS |
+                    EXECUTION_STATE.ES_SYSTEM_REQUIRED |
+                    EXECUTION_STATE.ES_DISPLAY_REQUIRED);
+
                 _workerThread = new Thread(() => WorkerLoop(_cancellationTokenSource.Token))
                 {
                     IsBackground = true,
@@ -45,7 +62,7 @@ namespace RunCat365
                 };
 
                 _workerThread.Start();
-                Console.WriteLine("TeamsStatusKeeper avviato.");
+                Console.WriteLine("TeamsStatusKeeper avviato - schermo non si bloccherà.");
             }
         }
 
@@ -61,6 +78,9 @@ namespace RunCat365
 
                 _cancellationTokenSource?.Cancel();
                 _workerThread?.Join(TimeSpan.FromSeconds(5));
+
+                // Ripristina il comportamento normale del sistema
+                SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
 
                 _isRunning = false;
                 _cancellationTokenSource?.Dispose();
