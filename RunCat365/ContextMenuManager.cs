@@ -37,7 +37,6 @@ namespace RunCat365
             Func<bool> getLaunchAtStartup,
             Func<bool, bool> toggleLaunchAtStartup,
             Action openRepository,
-            Action mouseMoverStart,
             Action teamsKeeperStart,
             Action onExit
         )
@@ -127,13 +126,6 @@ namespace RunCat365
                 repositoryMenu
             );
 
-            var mouseMoverStartItem = new CustomToolStripMenuItem("Start");
-            mouseMoverStartItem.Click += (sender, e) => mouseMoverStart();
-
-            var mouseMoverMenu = new CustomToolStripMenuItem("Mouse Mover");
-            mouseMoverMenu.DropDownItems.AddRange(
-                mouseMoverStartItem
-            );
 
             var teamsKeeperStartItem = new CustomToolStripMenuItem("Start Teams Status Keeper");
             teamsKeeperStartItem.Click += (sender, e) => teamsKeeperStart();
@@ -150,8 +142,6 @@ namespace RunCat365
                 settingsMenu,
                 informationMenu,
                 endlessGameMenu,
-                new ToolStripSeparator(),
-                mouseMoverMenu,
                 new ToolStripSeparator(),
                 teamsKeeperStartItem,
                 new ToolStripSeparator(),
