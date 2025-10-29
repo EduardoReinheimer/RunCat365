@@ -38,7 +38,6 @@ namespace RunCat365
             Func<bool, bool> toggleLaunchAtStartup,
             Action openRepository,
             Action mouseMoverStart,
-            Action mouseMoverStop,
             Action onExit
         )
         {
@@ -130,13 +129,9 @@ namespace RunCat365
             var mouseMoverStartItem = new CustomToolStripMenuItem("Start");
             mouseMoverStartItem.Click += (sender, e) => mouseMoverStart();
 
-            var mouseMoverStopItem = new CustomToolStripMenuItem("Stop");
-            mouseMoverStopItem.Click += (sender, e) => mouseMoverStop();
-
             var mouseMoverMenu = new CustomToolStripMenuItem("Mouse Mover");
             mouseMoverMenu.DropDownItems.AddRange(
-                mouseMoverStartItem,
-                mouseMoverStopItem
+                mouseMoverStartItem
             );
 
             var exitMenu = new CustomToolStripMenuItem("Exit");

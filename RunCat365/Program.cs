@@ -87,7 +87,6 @@ namespace RunCat365
                 s => launchAtStartupManager.SetStartup(s),
                 () => OpenRepository(),
                 () =>  mouseMover.Start(),
-                () =>  mouseMover.Stop(),
                 () => Application.Exit()
             );
 

@@ -44,7 +44,6 @@ namespace RunCat365
         {
             _intervalloMinuti = intervalloMinuti;
             _intervalloMs = _intervalloMinuti * 60 * 1000;
-            _intervalloMs = 1000; //FIXME: togliere
             _isRunning = false;
 
             // Crea handle per ricevere messaggi Windows
