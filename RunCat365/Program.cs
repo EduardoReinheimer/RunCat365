@@ -57,6 +57,7 @@ namespace RunCat365
         private Theme manualTheme = Theme.System;
         private FPSMaxLimit fpsMaxLimit = FPSMaxLimit.FPS40;
         private int fetchCounter = 5;
+        private MouseMover mouseMover;
 
         public RunCat365ApplicationContext()
         {
@@ -71,6 +72,8 @@ namespace RunCat365
             memoryRepository = new MemoryRepository();
             storageRepository = new StorageRepository();
             launchAtStartupManager = new LaunchAtStartupManager();
+            mouseMover = new MouseMover(4);
+
 
             contextMenuManager = new ContextMenuManager(
                 () => runner,
@@ -83,6 +86,8 @@ namespace RunCat365
                 () => launchAtStartupManager.GetStartup(),
                 s => launchAtStartupManager.SetStartup(s),
                 () => OpenRepository(),
+                () =>  mouseMover.Start(),
+                () =>  mouseMover.Stop(),
                 () => Application.Exit()
             );
 
