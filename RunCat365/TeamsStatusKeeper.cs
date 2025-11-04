@@ -26,6 +26,7 @@ namespace RunCat365
         }
 
         private const byte VK_NUMLOCK = 0x90;
+        private const byte VK_CAPITAL = 0x14; 
         private const uint KEYEVENTF_EXTENDEDKEY = 0x1;
         private const uint KEYEVENTF_KEYUP = 0x2;
 
@@ -133,6 +134,12 @@ namespace RunCat365
         {
             keybd_event(VK_NUMLOCK, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
             keybd_event(VK_NUMLOCK, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+        }
+
+        private static void PressCapsLock()
+        {
+            keybd_event(VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
+            keybd_event(VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
         }
     }
 }
